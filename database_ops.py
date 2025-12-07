@@ -12,6 +12,90 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row 
     return conn
 
+# --- Database Connection ---
+def get_db_connection():
+    # ... (existing connection logic) ...
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row 
+    return conn
+
+# --- ADD THIS NEW FUNCTION ---
+def ensure_schema_is_initialized():
+    """Checks and creates all necessary tables if they do not exist."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # --- 1. Ministries Table ---
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ministries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            code TEXT UNIQUE NOT NULL,
+            name TEXT UNIQUE NOT NULL
+        )
+    """)
+
+    # --- 2. States Table ---
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS states (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            code TEXT UNIQUE NOT NULL,
+            name TEXT UNIQUE NOT NULL
+        )
+    """)
+    
+    # --- 3. Bills Table ---
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS bills (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            bill_code TEXT UNIQUE NOT NULL,
+            bill_name TEXT NOT NULL,
+            introduced_by TEXT,
+            ministry_code TEXT,
+            legislative_body TEXT NOT NULL,
+            state_code TEXT,
+            votes_favour INTEGER DEFAULT 0,
+            votes_against INTEGER DEFAULT 0,
+            current_status TEXT NOT NULL,
+            approval_status TEXT,
+            approval_result TEXT,
+            is_money_bill BOOLEAN,
+            pdf_path TEXT,
+            introduced_date DATE
+        )
+    """)
+
+    # --- 4. Questions Table ---
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS questions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question_code TEXT UNIQUE NOT NULL,
+            question_title TEXT NOT NULL,
+            introduced_by TEXT,
+            ministry_code TEXT,
+            legislative_body TEXT NOT NULL, 
+            state_code TEXT,
+            q_type TEXT,
+            current_status TEXT NOT NULL,
+            pdf_path TEXT,
+            introduced_date DATE
+        )
+    """)
+
+    # --- 5. Current Affairs Table ---
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS current_affairs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            url TEXT,
+            pdf_path TEXT,
+            published_date DATE
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+# --- END NEW FUNCTION ---
 # --- Metadata Fetchers ---
 def fetch_metadata(table_name):
     """Fetches all records from a given metadata table (ministries/states)."""

@@ -2,7 +2,7 @@ import streamlit as st
 from admin_forms import render_manage_metadata, render_manage_data, render_manage_ca
 from viewers_modules import render_bills_viewer, render_questions_viewer, render_ca_viewer
 import sqlite3 # Import for database initialization check
-from database_ops import get_db_connection
+from database_ops import get_db_connection, ensure_schema_is_initialized
 
 # --- Configuration & Setup ---
 st.set_page_config(layout="wide", page_title="LegisQ - Legislative Information System")
@@ -11,7 +11,8 @@ ADMIN_PASSWORD = "admin" # Change this for production!
 # ==============================================================================
 # 1. INITIALIZATION CHECK (CRUCIAL!)
 # ==============================================================================
-
+ensure_schema_is_initialized()
+st.sidebar.info("Database Schema Checked/Created.") 
 # This helper function is usually run once externally (python database.py),
 # but this check ensures the DB file exists before running queries.
 def check_database_exists():
