@@ -1,20 +1,18 @@
 import streamlit as st
-import os
+import os # CRITICAL: Needed to access environment variables (Secrets)
 from pypdf import PdfReader
 from google import genai
 from google.genai import types 
 from google.genai.errors import APIError 
 
-# NOTE: REPLACE THIS placeholder with your actual key for summarization to work!
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE" 
-
-# --- CRITICAL FIX: Load key from environment variable ---
-# This ensures the app uses the key stored securely in Streamlit Cloud Secrets.
+# --- CRITICAL CONFIGURATION: SECURE KEY LOADING ---
+# 1. Attempt to fetch the key from the secure environment provided by Streamlit Secrets.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") 
-# If the key is not found in the environment, use a fallback (the placeholder string)
-if not GEMINI_API_KEY:
-    GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
-# --- END FIX ---
+
+# 2. Define the exact placeholder used in the code as a fallback check.
+FALLBACK_KEY = "YOUR_GEMINI_API_KEY_HERE"
+
+# -------------------------------------------------------------------------
 
 def extract_text_from_pdf(pdf_path):
     """Extracts text content from a local PDF file."""
@@ -41,10 +39,13 @@ def get_ai_summary(pdf_path):
 
     with st.spinner('🧠 Contacting Gemini AI to summarize the document...'):
         try:
-            if GEMINI_API_KEY == "YOUR_GEMINI_API_KEY_HERE" or not GEMINI_API_KEY:
-                 st.error("🚨 API Key Error: Please replace 'YOUR_GEMINI_API_KEY_HERE' with your actual key.")
+            # Check if the environment variable was successfully loaded from Streamlit Secrets
+            if not GEMINI_API_KEY or GEMINI_API_KEY == FALLBACK_KEY:
+                 st.error("🚨 API Key Error: Key is not loaded from Streamlit Secrets.")
+                 st.info("Action: Go to Streamlit Cloud -> Manage App -> Secrets. Ensure GEMINI_API_KEY is set correctly.")
                  return
             
+            # The client uses the key pulled from os.environ, which holds the actual secret value.
             client = genai.Client(api_key=GEMINI_API_KEY)
             
             system_prompt = (
