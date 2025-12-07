@@ -8,6 +8,14 @@ from google.genai.errors import APIError
 # NOTE: REPLACE THIS placeholder with your actual key for summarization to work!
 GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE" 
 
+# --- CRITICAL FIX: Load key from environment variable ---
+# This ensures the app uses the key stored securely in Streamlit Cloud Secrets.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") 
+# If the key is not found in the environment, use a fallback (the placeholder string)
+if not GEMINI_API_KEY:
+    GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+# --- END FIX ---
+
 def extract_text_from_pdf(pdf_path):
     """Extracts text content from a local PDF file."""
     text = ""
