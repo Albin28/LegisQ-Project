@@ -1,0 +1,13 @@
+#Python cache files
+
+pycache
+*.pyc
+
+#Virtual Environment
+
+.venv/venv/
+
+#Streamlit/Database/Secrets (CRITICAL)
+
+legisq.db
+pdfs/.env
