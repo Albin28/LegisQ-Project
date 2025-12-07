@@ -6,7 +6,7 @@ from google.genai import types
 from google.genai.errors import APIError 
 
 # NOTE: REPLACE THIS placeholder with your actual key for summarization to work!
-GEMINI_API_KEY = "AIzaSyDVgAQGNkGojNv0pctILmaAGwld0Qivi9Q" 
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE" 
 
 def extract_text_from_pdf(pdf_path):
     """Extracts text content from a local PDF file."""
